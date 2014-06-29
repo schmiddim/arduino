@@ -1,6 +1,8 @@
 #include <Charliplexing.h>
 #include <led7Segment.h>
 #include <Time.h>  
+#include <EEPROM.h>
+
 /*
  * Messages consist of the letter T followed by ten digit time (as seconds since Jan 1 1970)
  * you can send the text on the next line using Serial Monitor to set the clock to noon Jan 1 2013
@@ -17,6 +19,36 @@
 
 #define TIME_HEADER  "T"   // Header tag for serial time sync message
 #define TIME_REQUEST  7    // ASCII bell character requests a time sync message 
+
+
+
+//This function will write a 4 byte (32bit) long to the eeprom at
+//the specified address to adress + 3.
+void EEPROMWritelong(int address, long value) {
+      //Decomposition from a long to 4 bytes by using bitshift.
+      //One = Most significant -> Four = Least significant byte
+      byte four = (value & 0xFF);
+      byte three = ((value >> 8) & 0xFF);
+      byte two = ((value >> 16) & 0xFF);
+      byte one = ((value >> 24) & 0xFF);
+
+      //Write the 4 bytes into the eeprom memory.
+      EEPROM.write(address, four);
+      EEPROM.write(address + 1, three);
+      EEPROM.write(address + 2, two);
+      EEPROM.write(address + 3, one);
+}
+long EEPROMReadlong(long address) {
+      //Read the 4 bytes from the eeprom memory.
+      long four = EEPROM.read(address);
+      long three = EEPROM.read(address + 1);
+      long two = EEPROM.read(address + 2);
+      long one = EEPROM.read(address + 3);
+
+      //Return the recomposed long by using bitshift.
+      return ((four << 0) & 0xFF) + ((three << 8) & 0xFFFF) + ((two << 16) & 0xFFFFFF) + ((one << 24) & 0xFFFFFFFF);
+}
+
 
 
 void digitalClockDisplay(){
@@ -52,6 +84,7 @@ void processSyncMessage() {
      pctime = Serial.parseInt();
      if( pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2013)
        setTime(pctime); // Sync Arduino clock to the time received on the serial port
+       EEPROMWritelong(0, 1357041600);
      }
   }
 }
@@ -63,20 +96,6 @@ time_t requestSync()
 }
 
 //---------------- time stuff ----------------------------
-
-
-
-struct point {
-
-  uint8_t xp;        // Point Position in X direction (multplied by 16)
-
-  uint8_t x_speed;   // Speed
-
-  uint8_t flag;  
-
-} points[9];
-
-
 
 
 
@@ -105,11 +124,8 @@ void loop() {
   if (timeStatus()!= timeNotSet) {
     digitalClockDisplay();  
   }
-  if (timeStatus() == timeSet) {
-    digitalWrite(13, HIGH); // LED on if synced
-  } else {
-    digitalWrite(13, LOW);  // LED off if needs refresh
-  }
+
+
   delay(1000);
    //9 x 14
      showTime(hour(),minute());  
