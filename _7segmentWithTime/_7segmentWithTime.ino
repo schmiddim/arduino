@@ -22,6 +22,8 @@ date -d +2hours +T%s > /dev/ttyACM0
 #define TIME_HEADER  "T"   // Header tag for serial time sync message
 #define TIME_REQUEST  7    // ASCII bell character requests a time sync message 
 
+const unsigned long DEFAULT_TIME = 1357041600; // defaulttime
+
 
 
 //This function will write a 4 byte (32bit) long to the eeprom at
@@ -80,7 +82,6 @@ void printDigits(int digits){
 
 void processSyncMessage() {
   unsigned long pctime;
-  const unsigned long DEFAULT_TIME = 1357041600; // Jan 1 2013
 
   if(Serial.find(TIME_HEADER)) {
      pctime = Serial.parseInt();
@@ -109,9 +110,8 @@ void setup(){
   LedSign::Init( GRAYSCALE);
   
   //set time by EEPROM
-  const unsigned long DEFAULT_TIME = 1357041600;
   unsigned long eePromTime ;
-  eePromTime = EEPROMReadlong(0);
+  eePromTime = EEPROMReadlong(0);    //Red initial time from EEPROM
   if( eePromTime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2013)
        setTime(eePromTime); // Sync Arduino clock to the time received on the serial port
      
@@ -128,7 +128,7 @@ void setup(){
 
 int currentHour=0;
 int currentMinute= 0;
-
+int brightness=1;
 void loop() {
   
   if (Serial.available()) {
@@ -140,13 +140,11 @@ void loop() {
 
 
   delay(1000);
-   //9 x 14
+  
      showTime(hour(),minute(), 1);  
-     if(currentHour != hour() || currentMinute != minute()){  
-       
+     if(currentHour != hour() || currentMinute != minute()){         
          currentHour = hour();
-         currentMinute= minute();
-         
+         currentMinute= minute();         
          LedSign::Clear();
      }
 

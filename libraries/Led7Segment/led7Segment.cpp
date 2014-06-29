@@ -8,26 +8,22 @@ void displayA(int posX, int posY, int brightness ){
   LedSign::Set(posY,posX-3, brightness);
 }
 void displayB(int posX, int posY, int brightness ){
-  
   LedSign::Set(posY,posX-3,  brightness);    
   LedSign::Set(posY+1,posX-3, brightness);   
   LedSign::Set(posY+2,posX-3,  brightness);    
 }
-void displayC(int posX, int posY, int brightness ){
-  
+void displayC(int posX, int posY, int brightness ){  
   LedSign::Set(posY+3,posX-3, brightness);
   LedSign::Set(posY+4,posX-3, brightness);  
   LedSign::Set(posY+5,posX-3, brightness);  
 }
 void displayD(int posX, int posY, int brightness ){
-    //d
   LedSign::Set(posY+5,posX, brightness);   
   LedSign::Set(posY+5,posX-1, brightness);   
   LedSign::Set(posY+5,posX-2, brightness);
   LedSign::Set(posY+5,posX-3, brightness);
 }
-void displayE(int posX, int posY, int brightness ){
-  
+void displayE(int posX, int posY, int brightness ){ 
   LedSign::Set(posY+3,posX, brightness);
   LedSign::Set(posY+4,posX, brightness);  
 }
@@ -37,7 +33,6 @@ void displayF(int posX, int posY, int brightness ){
   LedSign::Set(posY+2,posX, brightness);    
 }
 void displayG(int posX, int posY, int brightness ){
-    //g
   LedSign::Set(posY+3,posX, brightness);   
   LedSign::Set(posY+3,posX-1, brightness);   
   LedSign::Set(posY+3,posX-2, brightness);
@@ -49,37 +44,35 @@ void displayDigit(int posX, int posY, int number, int brightness ){
   posX+=8;
     
   switch(number){
-    case 0:
-    displayA(posX, posY, brightness);
-    displayB(posX, posY, brightness);
-    displayC(posX, posY, brightness);
-    displayD(posX, posY, brightness);
-    displayE(posX, posY, brightness);
-    displayF(posX, posY, brightness);
-    
+	case 0:
+		displayA(posX, posY, brightness);
+		displayB(posX, posY, brightness);
+		displayC(posX, posY, brightness);
+		displayD(posX, posY, brightness);
+		displayE(posX, posY, brightness);
+		displayF(posX, posY, brightness);
 
-      break;
+	break;
     case 1:
-    displayB(posX, posY, brightness);
-    displayC(posX, posY, brightness);
-  
-      break; 
+		displayB(posX, posY, brightness);
+		displayC(posX, posY, brightness);
+	break; 
     case 2:
-      displayA(posX, posY, brightness);
-      displayB(posX, posY, brightness);
-      displayD(posX, posY, brightness);
-      displayE(posX, posY, brightness);     
-      displayG(posX ,posY, brightness);     
+		displayA(posX, posY, brightness);
+		displayB(posX, posY, brightness);
+		displayD(posX, posY, brightness);
+		displayE(posX, posY, brightness);     
+		displayG(posX ,posY, brightness);     
      
-      break; 
+	break; 
     case 3:
-      displayA(posX, posY, brightness);
-      displayB(posX, posY, brightness);
-      displayC(posX, posY, brightness);
-      displayD(posX, posY, brightness);
-      displayG(posX ,posY, brightness);        
-      break; 
-    case 4:
+		displayA(posX, posY, brightness);
+		displayB(posX, posY, brightness);
+		displayC(posX, posY, brightness);
+		displayD(posX, posY, brightness);
+		displayG(posX ,posY, brightness);        
+	break; 
+	case 4:
       displayB(posX, posY, brightness);
       displayC(posX, posY, brightness);
       displayF(posX, posY, brightness);
