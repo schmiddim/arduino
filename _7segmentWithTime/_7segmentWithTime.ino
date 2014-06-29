@@ -4,17 +4,9 @@
 #include <EEPROM.h>
 
 /*
- * Messages consist of the letter T followed by ten digit time (as seconds since Jan 1 1970)
- * you can send the text on the next line using Serial Monitor to set the clock to noon Jan 1 2013
- T1357041600  
- *
- * A Processing example sketch to automatically send the messages is inclided in the download
- * On Linux, you can use "" (UTC time zone)
-
 Get current germany timestap:
 date -d +2hours +T%s > /dev/ttyACM0 
 
-@see time example
 */
 //---------------- time stuff ----------------------------
 
@@ -128,7 +120,7 @@ void setup(){
 
 int currentHour=0;
 int currentMinute= 0;
-int brightness=1;
+
 void loop() {
   
   if (Serial.available()) {
@@ -140,8 +132,20 @@ void loop() {
 
 
   delay(1000);
+     int brightness;
+     if(hour() > 0 && hour() <7){
+        brightness =1; 
+     }else if(hour() >22){
+        brightness =1;
+     }else{
+        brightness=4;
+     }
+     
   
-     showTime(hour(),minute(), 1);  
+  
+     showTime(hour(),minute(), brightness);  
+     
+     
      if(currentHour != hour() || currentMinute != minute()){         
          currentHour = hour();
          currentMinute= minute();         
