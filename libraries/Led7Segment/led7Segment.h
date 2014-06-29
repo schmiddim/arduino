@@ -17,4 +17,4 @@ void clear();
 //Countdown from a startnumber
 void countDown(int from, int delayTime);
 //Show time 
-void showTime(int hour, int minute);
+void showTime(int hour, int minute, int brightness);

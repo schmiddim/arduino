@@ -141,13 +141,13 @@ void loop() {
 
   delay(1000);
    //9 x 14
-     showTime(hour(),minute());  
-     if(currentHour != hour() || currentMinute != minute()){
+     showTime(hour(),minute(), 1);  
+     if(currentHour != hour() || currentMinute != minute()){  
        
          currentHour = hour();
          currentMinute= minute();
          
-         clear();
+         LedSign::Clear();
      }
 
 

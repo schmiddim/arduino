@@ -44,12 +44,10 @@ void displayG(int posX, int posY, int brightness ){
   LedSign::Set(posY+3,posX-3, brightness);  
 }
 
-void displayDigit(int posX, int posY, int number ){
+void displayDigit(int posX, int posY, int number, int brightness ){
   posX*=-1;
   posX+=8;
-  
-  int brightness=2;
-  
+    
   switch(number){
     case 0:
     displayA(posX, posY, brightness);
@@ -130,7 +128,7 @@ void displayDigit(int posX, int posY, int number ){
 }
 
 //Display a single number
-void displayNumber(int number){
+void displayNumber(int number, int brightness){
    if(number>9999){
        return;  
    }
@@ -151,48 +149,49 @@ void displayNumber(int number){
    }   
      //   LedSign::Clear();
    // if(digits[0] >0)
-    displayDigit(0,0, digits[0]);  
+    displayDigit(0,0, digits[0],brightness);  
    // if(digits[1] >0)
-      displayDigit(5,0, digits[1]);
+      displayDigit(5,0, digits[1],brightness);
    //  if(digits[2] >0)  
-      displayDigit(0,8, digits[2]);
+      displayDigit(0,8, digits[2],brightness);
    //  if(digits[3] >0)
-    displayDigit(5,8, digits[3]);     
+    displayDigit(5,8, digits[3],brightness);     
             
   
 }
 
 //Countdown from a startnumber
 void countDown(int from, int delayTime){
+	int brightness=2;
+
     for(int y = from; y >=0; y--){
       LedSign::Clear();
-      if(y!=0){
-      
-         displayNumber(y);
+      if(y!=0){     
+         displayNumber(y, brightness);
         delay(delayTime); 
       }else{
         LedSign::Clear();
-        displayNumber(0000);
+        displayNumber(0000, brightness);
         delay(delayTime); 
         LedSign::Clear();
         delay(delayTime);   
-        displayNumber(0000);
+        displayNumber(0000, brightness);
         delay(delayTime); 
         LedSign::Clear();
         delay(delayTime);   
-        displayNumber(0000);
+        displayNumber(0000, brightness);
         delay(delayTime); 
       }      
     }  
 }
 
-void showTime(int hour, int minute){
+void showTime(int hour, int minute, int brightness){
   
   if(hour>24 || minute > 60){
-    displayDigit(0,0, 0);
-    displayDigit(5,0, 0);  
-    displayDigit(0,8, 0);
-    displayDigit(5,8, 0);
+    displayDigit(0,0, 0, brightness);
+    displayDigit(5,0, 0, brightness);  
+    displayDigit(0,8, 0, brightness);
+    displayDigit(5,8, 0, brightness);
     return;
   }
   
@@ -216,10 +215,10 @@ void showTime(int hour, int minute){
   }
 
 	if(digitsHour[0] !=0){
-		displayDigit(0,0, digitsHour[0]);
+		displayDigit(0,0, digitsHour[0], brightness);
 	}
-	displayDigit(5,0, digitsHour[1]);  
-	displayDigit(0,8, digitsMinute[0]);
-	displayDigit(5,8, digitsMinute[1]);
+	displayDigit(5,0, digitsHour[1], brightness);  
+	displayDigit(0,8, digitsMinute[0], brightness);
+	displayDigit(5,8, digitsMinute[1], brightness);
 }
 
