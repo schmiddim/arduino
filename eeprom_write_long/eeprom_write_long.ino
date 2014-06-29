@@ -83,7 +83,7 @@ void setup(){
   while (!Serial) ; // Needed for Leonardo only
   pinMode(13, OUTPUT);
   setSyncProvider( requestSync);  //set function to call when sync required
-  
+  EEPROMWritelong(0, 1357041600)
   
   Serial.println("Waiting for sync message");
   Serial.println(EEPROMReadlong(0), DEC);
