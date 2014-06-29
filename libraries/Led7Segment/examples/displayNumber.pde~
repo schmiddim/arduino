@@ -1,0 +1,13 @@
+#include <led7Segment.h>
+
+void setup(){
+  //LedSign::Init();
+  LedSign::Init( GRAYSCALE);
+  
+  Serial.begin(9600);
+  while (!Serial) ; // Needed for Leonardo only
+  pinMode(13, OUTPUT);
+  setSyncProvider( requestSync);  //set function to call when sync required
+  Serial.println("Waiting for sync message");
+
+}
