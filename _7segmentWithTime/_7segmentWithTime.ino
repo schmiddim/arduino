@@ -10,8 +10,10 @@
  *
  * A Processing example sketch to automatically send the messages is inclided in the download
  * On Linux, you can use "" (UTC time zone)
- 
- date +T%s > /dev/ttyACM0
+
+Get current germany timestap:
+date -d +2hours +T%s > /dev/ttyACM0 
+
 @see time example
 */
 //---------------- time stuff ----------------------------

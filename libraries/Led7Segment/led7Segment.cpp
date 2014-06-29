@@ -149,7 +149,7 @@ void displayNumber(int number){
       number /= 10;
         
    }   
-     //   clear();
+     //   LedSign::Clear();
    // if(digits[0] >0)
     displayDigit(0,0, digits[0]);  
    // if(digits[1] >0)
@@ -161,32 +161,24 @@ void displayNumber(int number){
             
   
 }
-//Clear the screen
-void clear(){
-    for(uint8_t y = 0; y < 9; y++){
-      for(uint8_t x = 0; x < 14; x++){
-         LedSign::Set(x,y,0);    
-      } 
-  }
-}
 
 //Countdown from a startnumber
 void countDown(int from, int delayTime){
     for(int y = from; y >=0; y--){
-      clear();
+      LedSign::Clear();
       if(y!=0){
       
          displayNumber(y);
         delay(delayTime); 
       }else{
-        clear();
+        LedSign::Clear();
         displayNumber(0000);
         delay(delayTime); 
-        clear();
+        LedSign::Clear();
         delay(delayTime);   
         displayNumber(0000);
         delay(delayTime); 
-        clear();
+        LedSign::Clear();
         delay(delayTime);   
         displayNumber(0000);
         delay(delayTime); 
