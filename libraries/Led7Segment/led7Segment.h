@@ -18,3 +18,5 @@ void clear();
 void countDown(int from, int delayTime);
 //Show time 
 void showTime(int hour, int minute, int brightness);
+
+void displayProgress(int percent);

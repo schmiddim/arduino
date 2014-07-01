@@ -15,7 +15,6 @@ date -d +2hours +T%s > /dev/ttyACM0
 #define TIME_REQUEST  7    // ASCII bell character requests a time sync message 
 
 
-#define BRIGHTNESS_MAX 7
 
 const unsigned long DEFAULT_TIME = 1357041600; // defaulttime
 
@@ -176,8 +175,8 @@ void loop() {
 
   
      showTime(hour(),minute(), brightness);  
-     
-     
+     //@todo position as param
+     //displayProgress(10);
      if(currentHour != hour() || currentMinute != minute()){         
          currentHour = hour();
          currentMinute= minute();         
