@@ -10,13 +10,20 @@ date -d +2hours +T%s > /dev/ttyACM0
 */
 //---------------- time stuff ----------------------------
 
-
+#define BRIGHTNESS_HEADER "B"  //Header tag for serial brightness message
 #define TIME_HEADER  "T"   // Header tag for serial time sync message
 #define TIME_REQUEST  7    // ASCII bell character requests a time sync message 
+
+
+#define BRIGHTNESS_MAX 7
 
 const unsigned long DEFAULT_TIME = 1357041600; // defaulttime
 
 
+int currentHour=0;
+int currentMinute= 0;
+int brightness=7;
+int cmdBrightness=-1;
 
 //This function will write a 4 byte (32bit) long to the eeprom at
 //the specified address to adress + 3.
@@ -58,6 +65,8 @@ void digitalClockDisplay(){
   Serial.print(month());
   Serial.print(" ");
   Serial.print(year()); 
+  Serial.print(" brightness: ");
+  Serial.print(brightness);
   Serial.println(); 
   
 
@@ -73,27 +82,47 @@ void printDigits(int digits){
 
 
 void processSyncMessage() {
-  unsigned long pctime;
 
-  if(Serial.find(TIME_HEADER)) {
-     pctime = Serial.parseInt();
-     if( pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2013)
-       setTime(pctime); // Sync Arduino clock to the time received on the serial port
-       EEPROMWritelong(0, pctime);
-     }
-  }
+  unsigned long pctime;
+  unsigned int pcBrightness;
+   if(Serial.find("B")) {
+     
+        pcBrightness = Serial.parseInt();
+    	Serial.print("CMD: Set Brightness ");
+	Serial.print(pcBrightness);   
+	Serial.println();   
+        if(pcBrightness >=0 && pcBrightness <8){
+           cmdBrightness= pcBrightness; 
+        }
+                               
+  
+    }else{
+      Serial.print("No valid Command found"); 
+      Serial.println();   
+    }
+    //@todo Serial.find kills the String
+   if(Serial.find(TIME_HEADER)) {
+     
+	pctime = Serial.parseInt();
+	if( pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater than Jan 1 2013)
+		Serial.print("CMD: Set Time to ");
+		Serial.print(pctime);   
+		Serial.println();   
+		setTime(pctime); // Sync Arduino clock to the time received on the serial port
+		EEPROMWritelong(0, pctime); //Write timestamp to EEPROM
+        }else{
+               Serial.print("Crappy CMD"); 
+        }
+   }
+  
+  
+  
 }
 
 time_t requestSync()
 {
   Serial.write(TIME_REQUEST);  
   return 0; // the time will be sent later in response to serial mesg
-}
-
-//---------------- time stuff ----------------------------
-
-unsigned long readTimeFromEEProm(){
-  
 }
 
 
@@ -118,8 +147,6 @@ void setup(){
 }
 
 
-int currentHour=0;
-int currentMinute= 0;
 
 void loop() {
   
@@ -131,17 +158,22 @@ void loop() {
   }
 
 
-  delay(1000);
-     int brightness;
-     if(hour() > 0 && hour() <7){
-        brightness =1; 
-     }else if(hour() >22){
-        brightness =1;
-     }else{
-        brightness=4;
-     }
-     
-  
+ // delay(1000);
+  if(cmdBrightness== -1){
+    if(hour() >= 23){
+     brightness = 1; 
+      
+    }else if (hour() >=0 && hour() <7){
+       brightness=1; 
+    }else{
+      
+    }
+  } else {
+     //There's a command to override brightness
+    brightness= cmdBrightness; 
+    
+  }
+
   
      showTime(hour(),minute(), brightness);  
      
