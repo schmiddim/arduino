@@ -1,14 +1,13 @@
 /*
 http://www.ebay.de/itm/281353517918?ssPageName=STRK:MEWNX:IT&_trksid=p3984.m1439.l2648
 
-Vide+
-http://www.banggood.com/DS3231-AT24C32-IIC-High-Precision-Real-Time-Clock-Module-For-Arduino-video-p81066-v4548.html
 
-http://forums.adafruit.com/viewtopic.php?f=41&t=20346 <-zipfile?
-
-
+https://github.com/maniacbug/RTClib
+@see
+http://www.l8ter.com/?p=417
 
 
+Wiring
 SCL → A5
 SDA → A4
 VCC → 5V
@@ -24,7 +23,7 @@ GND → GND
 RTC_DS1307 RTC;
 
 void setup () {
-    Serial.begin(57600);
+    Serial.begin(9600);
     Wire.begin();
     RTC.begin();
     DateTime now = RTC.now();
