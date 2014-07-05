@@ -1,4 +1,10 @@
+/***
+Buzzer Vcc to 11
+GND to GND
+*/
+
 // constants won't change. They're used here to 
+
 // set pin numbers:
 const int buttonPin = 8;     // the number of the pushbutton pin
 const int ledPin =  13;      // the number of the LED pin
