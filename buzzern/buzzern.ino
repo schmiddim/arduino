@@ -8,7 +8,6 @@ GND to GND
 // set pin numbers:
 const int buttonPin = 8;     // the number of the pushbutton pin
 const int ledPin =  13;      // the number of the LED pin
-const int buzzer = 11;       //the buzzer
 const int potiPin= 0;
 
 
@@ -46,7 +45,7 @@ void loop(){
   if (buttonState == HIGH) {     
     // turn LED on:    
     digitalWrite(ledPin, HIGH);  
-    beep();
+   // beep();
   } 
   else {
     // turn LED off:
