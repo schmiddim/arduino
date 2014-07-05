@@ -19,6 +19,7 @@ Ebay
 
 //Serial Event
 http://arduino.cc/en/Tutorial/SerialEvent
+
 This works on Digital Pins!
 
 HC-05 GND --- Arduino GND Pin
@@ -61,11 +62,7 @@ void setup()
 void loop()
 {
   
- // digitalWrite(led, HIGH);
- // beep();  
-  
-  
-  
+  //@todo - Newline / CR Stuff
   
    while (BTSerial.available()) {
     // get the new byte:
@@ -100,8 +97,28 @@ void loop()
 
 //Handle commands here
 void processCommand(String from, String command){
-
-  
+  if(command == "led on\n"){
+    digitalWrite(led, HIGH);
+  }else if(command == "led off\n"){
+    
+    digitalWrite(led, LOW);  
+  }else if(command=="beep\n"){
+     beep(); 
+  }else if(command.substring(0) == "beep_d"){
+   
+  }  else {
+    Serial.println("==Commands==");
+    Serial.println("led on");    
+    Serial.println("led off");    
+    Serial.println("beep");
+    Serial.println("beep_d [duration]");
+    
+    BTSerial.println("==Commands==");
+    BTSerial.println("led on");    
+    BTSerial.println("led off");    
+    BTSerial.println("beep");
+    BTSerial.println("beep_d [duration]");
+  }
 }
 
 //do a beep
@@ -109,5 +126,12 @@ void beep(){
     analogWrite(buzzer,128);
     delay(500);
     digitalWrite(buzzer, LOW);
-    delay(500);
+
+}
+//do a beep
+void beep(int duration){
+    analogWrite(buzzer,128);
+    delay(duration);
+    digitalWrite(buzzer, LOW);
+
 }
