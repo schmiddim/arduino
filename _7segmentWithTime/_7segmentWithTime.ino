@@ -84,21 +84,7 @@ void processSyncMessage() {
 
   unsigned long pctime;
   unsigned int pcBrightness;
-   if(Serial.find("B")) {
-     
-        pcBrightness = Serial.parseInt();
-    	Serial.print("CMD: Set Brightness ");
-	Serial.print(pcBrightness);   
-	Serial.println();   
-        if(pcBrightness >=0 && pcBrightness <8){
-           cmdBrightness= pcBrightness; 
-        }
-                               
-  
-    }else{
-      Serial.print("No valid Command found"); 
-      Serial.println();   
-    }
+
     //@todo Serial.find kills the String
    if(Serial.find(TIME_HEADER)) {
      
@@ -113,6 +99,21 @@ void processSyncMessage() {
                Serial.print("Crappy CMD"); 
         }
    }
+      if(Serial.find("B")) {
+     
+        pcBrightness = Serial.parseInt();
+    	Serial.print("CMD: Set Brightness ");
+	Serial.print(pcBrightness);   
+	Serial.println();   
+        if(pcBrightness >=0 && pcBrightness <8){
+           cmdBrightness= pcBrightness; 
+        }
+                               
+  
+    }else{
+      Serial.print("No valid Command found"); 
+      Serial.println();   
+    }
   
   
   
@@ -159,7 +160,7 @@ void loop() {
 
  // delay(1000);
   if(cmdBrightness== -1){
-    if(hour() >= 23){
+    if(hour() >= 22){
      brightness = 1; 
       
     }else if (hour() >=0 && hour() <7){

@@ -6,7 +6,7 @@ DATE: Aug 29, 2013
 LICENSE: Public domain (use at your own risk)
 CONTACT: techbitar at gmail dot com (techbitar.com)
 
-Source
+Source (including Manual for configuring the BT Chip
 http://www.instructables.com/id/Modify-The-HC-05-Bluetooth-Module-Defaults-Using-A/
 
 
