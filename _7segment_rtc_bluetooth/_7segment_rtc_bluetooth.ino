@@ -28,6 +28,7 @@ This is a clock driven by a DS1307 RTC Clock Module and controlled via Bluetooth
  HC-05 Key (PIN 34) --- Arduino 5V
  */
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
+#define DEBUG 1
 
 #include <Wire.h>
 #include <SPI.h>
@@ -84,6 +85,8 @@ void setup () {
 
 void loop () {
   DateTime now = RTC.now();
+
+  //Brightness
   if(now.hour() >= 22){
     brightness = 1; 
 
@@ -92,15 +95,18 @@ void loop () {
     brightness=1; 
   }
   else{
-
+    //
   }
+
+  //Display Digits on Display
   showTime(now.hour(),now.minute(), brightness);  
   if(currentHour != now.hour() || currentMinute != now.minute()){         
     currentHour = now.hour();
     currentMinute= now.minute();         
     LedSign::Clear();
   }
-
+  
+  //Read Commands from Serial USB || BT
   while (BTSerial.available()) {
     // get the new byte:
     char inChar = (char)BTSerial.read(); 
@@ -109,8 +115,6 @@ void loop () {
     // if the incoming character is a newline, set a flag
     // so the main loop can do something about it:
     if (inChar == '\n') {
-      //  Serial.println(inputString);
-      //  BTSerial.println(inputString);
       processCommand("BT", inputString);
       inputString="";
     } 
@@ -130,62 +134,89 @@ void loop () {
       inputString="";
     } 
   }
-
-  //test alarm
-  if(now.hour() == 15 && now.minute() ==13 && now.second() == 0){
-    beep();
-
-    //   beep();
-
-
-  }
-
-  //only for debug purpose
-  serialDisplayTime(3000, 5);    
-
-
-
 }
+
 
 //Handle commands here
 //@todo wire up Communication Control here
 void processCommand(String from, String command){
-  if(command == "led on\n"){
+
+  if(command.substring(0, 3) == "cmd"){
+    if(command.substring(4,9) =="alert"){
+      processAlertCommand(command.substring(9));
+
+    }
+    else if (command.substring(4, 8) == "stop"){
+      processStopCommand(command.substring(8));
+
+    }
+    else if(command.substring(4, 11 ) == "setTime"){
+      processSetTimeCommand(command.substring(11));
+
+    }
+    else if(command.substring(4,8) == "beep"){
+      processBeepCommand(command.substring(8));
+    }
+    else if(command.substring(4,7) == "led"){
+      processLedCommand(command.substring(7) );
+    }
+
+    else{
+      printBoth("command unknown: ");
+      printlnBoth(command);
+      printBothUsage();
+    }
+  }
+  else{
+
+    printBoth("Invalid command: ");
+
+    printlnBoth(command);
+    printBothUsage();
+  }
+
+
+}
+//process different Commands 
+void processAlertCommand(String command){
+  command.trim();
+  printBoth("Set an alert: "); 
+  printlnBoth(command); 
+  //@TODO implement me
+}
+
+void processStopCommand(String command){
+  command.trim();
+  printBoth("Stop the Alert: "); 
+  printlnBoth(command); 
+  //@TODO implement me
+}
+void processSetTimeCommand(String command){
+  command.trim();
+  printBoth("Set Time: "); 
+  printlnBoth(command); 
+  //@TODO implement me
+}
+
+void processBeepCommand(String command){
+  command.trim();
+  beep();
+}
+
+void processLedCommand(String command){
+  command.trim();
+  printBoth("Set LED: "); 
+  if( command.substring(0,2 ) == "on"){
+    printlnBoth( " on " ); 
     digitalWrite(LED, HIGH);
   }
-  else if(command == "led off\n"){
-
+  else if(command.substring(0,3) == "off") {
+    printlnBoth( " off " ); 
     digitalWrite(LED, LOW);  
   }
-  else if(command=="beep\n"){
-    beep(); 
 
-  }
-  else if(command=="date\n"){
-    serialDisplayTime(3000,  5);
-  } 
-
-  else if(command.substring(0) == "beep_d"){
-
-  }
-  else if(command=="beep"){
-    beep(); 
-
-  } 
-  else {
-    Serial.println("==Commands==");
-    Serial.println("led on");    
-    Serial.println("led off");    
-    Serial.println("beep");
-    Serial.println("beep_d [duration]");
-
-    BTSerial.println("==Commands==");
-    BTSerial.println("led on");    
-    BTSerial.println("led off");    
-    BTSerial.println("beep");
-    BTSerial.println("beep_d [duration]");
-  }
 }
+
 
 //do a beep
 void beep(){
@@ -193,6 +224,62 @@ void beep(){
   delay(500);
   digitalWrite(BUZZER, LOW);
 
+}
+
+String getDayOfWeekName(int dayOfWeek){
+  switch (dayOfWeek){
+  case 0:
+    return "Sunday";
+  case 1:
+    return "Monday";      
+  case 2:
+    return "Tuesday";
+  case 3:
+    return "Wednesday";            
+  case 4:
+    return "Thursday";
+  case 5:
+    return "Friday";     
+  case 6:
+    return "Friday";     
+  default: 
+    return "Unkown Day";
+  }
+}
+
+void printBoth(String str){
+#ifdef DEBUG
+  BTSerial.print(str);
+  Serial.print(str);
+#endif
+}
+void printlnBoth(String str){
+#ifdef DEBUG
+  BTSerial.println(str);
+  Serial.println(str);  
+#endif
+}
+void printBothUsage(){
+  printlnBoth("Alert Clock API by Michael Schmitt schmiddim@gmx.at");
+  printlnBoth("==USAGE===");
+  printlnBoth("==Alerts==");
+  printlnBoth("=Set an alert=");
+  printlnBoth("cmd alert set HH MM SS");
+  printlnBoth("=Delete an alert=");
+  printlnBoth("cmd alert delete HH MM SS");
+  printlnBoth("=Deactivate an alert=");
+  printlnBoth("cmd alert deactivate HH MM SS");
+  printlnBoth("=List alerts=");
+  printlnBoth("cmd alert list");
+  printlnBoth("==Stop Alert==");
+  printlnBoth("cmd stop");
+  printlnBoth("==Debug==");
+  printlnBoth("cmd led on");
+  printlnBoth("cmd led off");
+  printlnBoth("cmd beep");
+  printlnBoth("==@TODO==");
+  printlnBoth("@brightness");
+  printlnBoth("@settime");
 }
 
 void serialDisplayTime(int duration, int daysInFuture){
@@ -222,6 +309,10 @@ void serialDisplayTime(int duration, int daysInFuture){
   Serial.print(now.unixtime() / 86400L);
   Serial.println("d");
 
+
+
+
+
   // calculate a date in future days and 30 seconds into the future
   DateTime future (now.unixtime() + daysInFuture * 86400L);
 
@@ -248,30 +339,59 @@ void serialDisplayTime(int duration, int daysInFuture){
   Serial.print(getDayOfWeekName(future.dayOfWeek()));
 
   Serial.println();
+
+
+  BTSerial.print(now.year(), DEC);
+
+  BTSerial.print('/');
+  BTSerial.print(now.month(), DEC);
+  BTSerial.print('/');
+  BTSerial.print(now.day(), DEC);
+  BTSerial.print(' ');
+  BTSerial.print(now.hour(), DEC);
+  BTSerial.print(':');
+  BTSerial.print(now.minute(), DEC);
+  BTSerial.print(':');
+  BTSerial.print(now.second(), DEC);
+  BTSerial.println();
+  BTSerial.print("current day of week: ");
+  BTSerial.print(now.dayOfWeek(), DEC);
+  BTSerial.print(", ");
+  BTSerial.print(getDayOfWeekName(now.dayOfWeek()));
+  BTSerial.println();
+
+  BTSerial.print("since midnight 1/1/1970 = ");
+  BTSerial.print(now.unixtime());
+  BTSerial.print("s = ");
+  BTSerial.print(now.unixtime() / 86400L);
+  BTSerial.println("d");
+
+  // calculate a date in future days and 30 seconds into the future
+
+  BTSerial.print(" now + 1d + 30s: ");
+  BTSerial.print(" now + ");
+  BTSerial.print( daysInFuture );
+  BTSerial.print( "days");
+
+  BTSerial.print(future.year(), DEC);
+  BTSerial.print('/');
+  BTSerial.print(future.month(), DEC);
+  BTSerial.print('/');
+  BTSerial.print(future.day(), DEC);
+  BTSerial.print(' ');
+  BTSerial.print(future.hour(), DEC);
+  BTSerial.print(':');
+  BTSerial.print(future.minute(), DEC);
+  BTSerial.print(':');
+  BTSerial.print(future.second(), DEC);
+  BTSerial.println();
+  BTSerial.print("day of week: ");
+  BTSerial.print(future.dayOfWeek(), DEC);
+  BTSerial.print(", ");
+  BTSerial.print(getDayOfWeekName(future.dayOfWeek()));
+  BTSerial.println();
   delay(duration);
 
 }
-String getDayOfWeekName(int dayOfWeek){
-  switch (dayOfWeek){
-  case 0:
-    return "Sunday";
-  case 1:
-    return "Monday";      
-  case 2:
-    return "Tuesday";
-  case 3:
-    return "Wednesday";            
-  case 4:
-    return "Thursday";
-  case 5:
-    return "Friday";     
-  case 6:
-    return "Friday";     
-  default: 
-    return "Unkown Day";
-  }
-}
-
-
 
 
