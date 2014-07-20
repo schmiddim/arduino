@@ -26,7 +26,16 @@ This is a clock driven by a DS1307 RTC Clock Module and controlled via Bluetooth
  HC-05 TX --- Arduino Pin A0 (soft RX)
  HC-05 RX --- Arduino Pin A1 (soft TX)
  HC-05 Key (PIN 34) --- Arduino 5V
+
+Wiring single led + Buzzer
+Buzzer GND -> GND
+       VCC -> A3
+LED   GND -> 220ohm-->GND
+      VCC -> A2
+
  */
+ 
+ 
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
 #define DEBUG 1
 
@@ -67,7 +76,6 @@ void setup () {
 
   //Bluetooth
   BTSerial.begin(9600);  // HC-05 default speed in AT command more
-  BTSerial.println("Enter AT commands:");
   inputString.reserve(200);
 
 
@@ -105,7 +113,7 @@ void loop () {
     currentMinute= now.minute();         
     LedSign::Clear();
   }
-  
+
   //Read Commands from Serial USB || BT
   while (BTSerial.available()) {
     // get the new byte:
@@ -121,14 +129,10 @@ void loop () {
 
   }  
   while (Serial.available()) {
-    // get the new byte:
     char inChar = (char)Serial.read(); 
-    // add it to the inputString:
     inputString += inChar;
-    // if the incoming character is a newline, set a flag
-    // so the main loop can do something about it:
     if (inChar == '\n') {
-      Serial.println(inputString);
+      //Serial.println(inputString);
       BTSerial.println(inputString);
       processCommand("PC", inputString);
       inputString="";
@@ -141,26 +145,43 @@ void loop () {
 //@todo wire up Communication Control here
 void processCommand(String from, String command){
 
-  if(command.substring(0, 3) == "cmd"){
-    if(command.substring(4,9) =="alert"){
-      processAlertCommand(command.substring(9));
 
+  if(command.substring(0, 3) == "cmd"){
+
+    //User wants to do something with an alert
+    if(command.substring(4,6) =="al"){
+      if(command.substring(7,10) == "set"){
+        if(validateTimeString(command.substring(11))){
+          printlnBoth("timestring valid"); 
+
+        }
+      }
+      else if(command.substring(7,10) == "del"){
+        if(validateTimeString(command.substring(11))){
+          printlnBoth("timestring valid"); 
+
+        }          
+      }
+      else {
+        printBoth("invalid...'");
+        printlnBoth(command.substring(7,10) );
+      }
+
+      // validateTimeString(command);
+      //     processAlertCommand(command.substring(6));
     }
     else if (command.substring(4, 8) == "stop"){
       processStopCommand(command.substring(8));
-
     }
     else if(command.substring(4, 11 ) == "setTime"){
       processSetTimeCommand(command.substring(11));
-
     }
     else if(command.substring(4,8) == "beep"){
       processBeepCommand(command.substring(8));
     }
     else if(command.substring(4,7) == "led"){
       processLedCommand(command.substring(7) );
-    }
-
+    } 
     else{
       printBoth("command unknown: ");
       printlnBoth(command);
@@ -168,21 +189,34 @@ void processCommand(String from, String command){
     }
   }
   else{
-
     printBoth("Invalid command: ");
-
-    printlnBoth(command);
-    printBothUsage();
+    serialDisplayTime
   }
 
 
 }
-//process different Commands 
-void processAlertCommand(String command){
-  command.trim();
-  printBoth("Set an alert: "); 
-  printlnBoth(command); 
-  //@TODO implement me
+/**
+ *  Timestring has only digits and length ==16?
+ *
+ */
+bool validateTimeString(String timeString){
+  if(timeString.length() != 16){
+    printlnBoth("E 185" );
+    return false;
+  }
+  for(int i=0;i<14;i++){
+    if(i != 6){
+      if(!isDigit(timeString.charAt(i) )){
+        return false;
+      }
+    }
+  }
+  //in range? 
+  
+  //root@debian:/home/ms/sketchbook# echo "071500 01111100" >/dev/rfcomm0 
+
+
+  return true;
 }
 
 void processStopCommand(String command){
@@ -204,7 +238,7 @@ void processBeepCommand(String command){
 }
 
 void processLedCommand(String command){
-  command.trim();
+  //command.trim();
   printBoth("Set LED: "); 
   if( command.substring(0,2 ) == "on"){
     printlnBoth( " on " ); 
@@ -262,13 +296,13 @@ void printlnBoth(String str){
 void printBothUsage(){
   printlnBoth("Alert Clock API by Michael Schmitt schmiddim@gmx.at");
   printlnBoth("==USAGE===");
+  printlnBoth("dateformat: cmd alert del 074500-0100001");
+  printlnBoth("al at 07:45 Monday + Saturday");
   printlnBoth("==Alerts==");
   printlnBoth("=Set an alert=");
-  printlnBoth("cmd alert set HH MM SS");
+  printlnBoth("cmd alert set D HH MM SS");
   printlnBoth("=Delete an alert=");
-  printlnBoth("cmd alert delete HH MM SS");
-  printlnBoth("=Deactivate an alert=");
-  printlnBoth("cmd alert deactivate HH MM SS");
+  printlnBoth("cmd alert del D HH MM SS");
   printlnBoth("=List alerts=");
   printlnBoth("cmd alert list");
   printlnBoth("==Stop Alert==");
@@ -393,5 +427,8 @@ void serialDisplayTime(int duration, int daysInFuture){
   delay(duration);
 
 }
+
+
+
 
 
