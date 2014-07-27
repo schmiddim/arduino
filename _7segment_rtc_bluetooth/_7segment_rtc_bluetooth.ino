@@ -93,17 +93,16 @@ void setup () {
 
 void loop () {
   DateTime now = RTC.now();
-
-  //Brightness
-  if(now.hour() >= 22){
-    brightness = 1; 
+  
+  //Turn off from 22 - 1
+  if(now.hour() >= 22 && now.hour() <1){
+    brightness = 0; 
 
   }
-  else if (now.hour() >=0 && now.hour() <7){
+  
+  //Brightness make it darker from 1 - 7 
+  if (now.hour() >=1 && now.hour() <7){
     brightness=1; 
-  }
-  else{
-    //
   }
 
   //Display Digits on Display
@@ -190,7 +189,7 @@ void processCommand(String from, String command){
   }
   else{
     printBoth("Invalid command: ");
-    serialDisplayTime
+    serialDisplayTime(3000, 1);
   }
 
 
