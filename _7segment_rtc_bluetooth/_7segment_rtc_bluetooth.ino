@@ -23,9 +23,9 @@ This is a clock driven by a DS1307 RTC Clock Module and controlled via Bluetooth
  Wiring BT
  HC-05 GND --- Arduino GND Pin
  HC-05 VCC (5V) --- Arduino 5V
- HC-05 TX --- Arduino Pin A0 (soft RX)
- HC-05 RX --- Arduino Pin A1 (soft TX)
- HC-05 Key (PIN 34) --- Arduino 5V
+ HC-05 TX --- Arduino Pin A1 (soft RX)
+ HC-05 RX --- Arduino Pin A0 (soft TX)
+ HC-05 Key  (Wakeup) (PIN 34) --- Arduino 5V
 
 Wiring single led + Buzzer
 Buzzer GND -> GND
@@ -56,8 +56,8 @@ int currentHour=0;
 int currentMinute= 0;
 
 //Bluetooth stuff
-#define BT_RX A1
-#define BT_TX A0
+#define BT_RX A0
+#define BT_TX A1
 
 SoftwareSerial BTSerial(BT_RX, BT_TX); // RX | TX
 String inputString = "";         // a string to hold incoming data
@@ -94,16 +94,24 @@ void setup () {
 void loop () {
   DateTime now = RTC.now();
   
+  
+  //Brightness make it darker from 1 - 7 
+  if (now.hour() >=0 && now.hour() < 6){
+    brightness=0; 
+  }
+
   //Turn off from 22 - 1
-  if(now.hour() >= 22 && now.hour() <1){
-    brightness = 0; 
+  if(now.hour() >= 21 && now.hour() <23){
+    brightness = 3; 
+
+  }
+    //Turn off from 22 - 1
+  if(now.hour() >= 23){
+    brightness = 1; 
 
   }
   
-  //Brightness make it darker from 1 - 7 
-  if (now.hour() >=1 && now.hour() <7){
-    brightness=1; 
-  }
+  
 
   //Display Digits on Display
   showTime(now.hour(),now.minute(), brightness);  
@@ -423,6 +431,8 @@ void serialDisplayTime(int duration, int daysInFuture){
   BTSerial.print(", ");
   BTSerial.print(getDayOfWeekName(future.dayOfWeek()));
   BTSerial.println();
+  printlnBoth("brightness: ");
+ Serial.print(brightness, DEC);
   delay(duration);
 
 }
