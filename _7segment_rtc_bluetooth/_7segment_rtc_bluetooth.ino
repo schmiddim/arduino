@@ -141,7 +141,7 @@ void loop () {
   }
   
   //Check if we have an alert & beep
-  if(isThereAnAlert(now, 10)){
+  if(isThereAnAlert(now)){
   	beep();
   }
   //beep();
@@ -458,12 +458,17 @@ void serialDisplayTime(int duration, int daysInFuture){
  * check if theres an alert
  * @return bool
  */
-bool isThereAnAlert(DateTime now, int beepForSeconds){
+bool isThereAnAlert(DateTime now){
+
+	int beepForSeconds=10;
 	if(beepForSeconds>=60) {
 		beepForSeconds = 60;
 	}
 
-	byte alertHour = 6;
+	/*
+	 * returns true on every day of week except sunday + saturday 7:30 AM
+	 */
+	byte alertHour = 7;
 	byte alertMinute = 30;
 
 	bool beepOnDays[7] =
