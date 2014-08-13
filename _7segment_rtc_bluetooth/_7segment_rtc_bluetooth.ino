@@ -468,19 +468,19 @@ bool isThereAnAlert(DateTime now){
 	/*
 	 * returns true on every day of week except sunday + saturday 7:30 AM
 	 */
-	byte alertHour = 7;
+	byte alertHour = 6;
 	byte alertMinute = 30;
 
 	bool beepOnDays[7] =
 	{
-	false   //Sunday
-	,true   //Monday
-	,true   //Tuesday
-	,true   //Wednesday
-	,true   //Thursday   
-	,true   //Friday
-	,false   //Saturday
-}; 
+		false   //Sunday
+		,true   //Monday
+		,true   //Tuesday
+		,true   //Wednesday
+		,true   //Thursday   
+		,true   //Friday
+		,false   //Saturday
+	}; 
 
 
 if(now.hour() == alertHour && now.minute() == alertMinute && beepOnDays[now.dayOfWeek()] == true && now.second() <beepForSeconds) {
